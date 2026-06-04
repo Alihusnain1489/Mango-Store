@@ -21,6 +21,7 @@ export interface Product {
   weight?: string;
   subtotal?: number;
   createdAt?: string;
+  tags?: string[];
 }
 
 // Alias for compatibility

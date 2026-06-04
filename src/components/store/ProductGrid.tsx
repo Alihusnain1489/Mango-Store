@@ -52,7 +52,7 @@ export default function ProductGrid({ products: raw, showFilters = false }: Prop
           {/* Category pills */}
           <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 8, marginBottom: 10 }}>
             {cats.map((c) => (
-              <button key={c} onClick={() => setCat(c)} style={{
+              <button key={c} onClick={() => setCat(c ?? '')} style={{
                 padding: '6px 14px', borderRadius: 50, fontSize: 12, fontWeight: 600,
                 border: `1.5px solid ${cat === c ? '#1a7a3c' : '#ddd'}`,
                 background: cat === c ? '#1a7a3c' : '#fff',

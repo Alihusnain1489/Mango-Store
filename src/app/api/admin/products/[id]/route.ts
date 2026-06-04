@@ -4,10 +4,11 @@ import Product from '@/models/Product';
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     await connectDB();
     const body = await req.json();
     const updated = await Product.findByIdAndUpdate(
-      params.id,
+      id,
       {
         ...body,
         images: body.image ? [body.image] : undefined,
@@ -25,8 +26,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     await connectDB();
-    await Product.findByIdAndDelete(params.id);
+    await Product.findByIdAndDelete(id);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

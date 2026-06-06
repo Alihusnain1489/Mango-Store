@@ -13,7 +13,7 @@ const slides = [
     href: '/products?category=Premium Mangoes',
   },
   {
-    image: '/jamun.jpg',
+    image: '/Jamun.jpg',
     subtitle: 'Farm Fresh',
     title: 'Quality You Can Trust',
     description: 'Fresh fruits delivered daily with guaranteed quality and freshness.',

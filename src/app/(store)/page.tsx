@@ -4,19 +4,18 @@ import Link from 'next/link';
 import HeroBanner from '@/components/store/HeroBanner';
 import CategoryIcons from '@/components/store/CategoryIcons';
 import ProductGrid from '@/components/store/ProductGrid';
+import SuperSavings from '@/components/store/SuperSavings';
 import { Product } from '@/types';
-import { Truck, ShieldCheck, Star, RefreshCw } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Maan Al Khair — Premium Mangoes, Fruits & Vegetables Dubai',
-  description: "Dubai's finest mangoes — Alphonso, Chaunsa, Sindhri & more. Same-day delivery. All prices in AED.",
+  description: "Dubai's finest mangoes — Chaunsa, Sindhri, Anwar Ratol & more. Same-day delivery. All prices in AED.",
 };
 
-async function getProducts(featured?: boolean): Promise<Product[]> {
+async function getProducts(): Promise<Product[]> {
   try {
     const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const url  = featured ? `${base}/api/products?featured=true` : `${base}/api/products`;
-    const res  = await fetch(url, { next: { revalidate: 180 } });
+    const res  = await fetch(`${base}/api/products`, { next: { revalidate: 180 } });
     if (!res.ok) return [];
     const d = await res.json();
     if (Array.isArray(d))          return d;
@@ -27,107 +26,60 @@ async function getProducts(featured?: boolean): Promise<Product[]> {
   }
 }
 
-const WHY = [
-  {
-    icon: <Truck size={22} color="#1a7a3c" />,
-    bg: '#e6f7ed',
-    title: 'Same-Day Delivery',
-    desc: 'Order before 2 PM and get your fresh produce delivered across Dubai today.',
-  },
-  {
-    icon: <ShieldCheck size={22} color="#1a7a3c" />,
-    bg: '#e6f7ed',
-    title: 'Freshness Guaranteed',
-    desc: 'Not happy? Full refund, no questions asked. We stand behind our quality.',
-  },
-  {
-    icon: <Star size={22} color="#f5a623" />,
-    bg: '#fff8ee',
-    title: 'Premium Selection',
-    desc: "Hand-picked from world's top farms — India, Pakistan, Thailand, South Africa.",
-  },
-  {
-    icon: <RefreshCw size={22} color="#2563eb" />,
-    bg: '#eff6ff',
-    title: 'Daily Restocking',
-    desc: 'Fresh stock arrives every morning so you always get the best quality produce.',
-  },
-];
-
 export default async function HomePage() {
-  const [featured, all] = await Promise.all([getProducts(true), getProducts()]);
-  const mangoes    = all.filter((p) => p.category === 'Mangoes');
-  const fruits     = all.filter((p) => p.category === 'Fruits');
-  const vegetables = all.filter((p) => p.category === 'Vegetables');
+  const all = await getProducts();
+  const premiumMangoes = all.filter((p) => p.category === 'Premium Mangoes');
+  const seasonal       = all.filter((p) => p.category === 'Seasonal');
+  const everyday       = all.filter((p) => p.category === 'Everyday');
 
   return (
     <div style={{ background: '#f7f8f7' }}>
 
-      {/* Hero */}
+      {/* Hero — full width, no wrapper padding */}
       <HeroBanner />
 
-      {/* Category icons */}
-      <div style={{ background: '#fff', padding: '28px 20px', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 20 }}>
-            Shop by Category
-          </p>
-          <CategoryIcons />
-        </div>
-      </div>
+      {/* Category icons — owns its own bg/padding */}
+      <CategoryIcons />
 
-       {/* Mangoes */}
-      {mangoes.length > 0 && (
-        <div style={{ background: 'linear-gradient(180deg, #fffdf5, #fffbee)', padding: '40px 20px', borderBottom: '1px solid var(--border)' }}>
+      {/* Premium Mangoes */}
+      {premiumMangoes.length > 0 && (
+        <div style={{ background: 'linear-gradient(180deg, #fffdf5, #fffbee)', padding: '40px 20px', borderBottom: '1px solid #e8e8e8' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-            <SectionHeader title="🥭 Fresh Mangoes" subtitle="Premium varieties from India, Pakistan & beyond" link="/products?category=Mangoes" />
+            <SectionHeader title="🥭 Premium Mangoes" subtitle="Chaunsa, Sindhri, Anwar Ratol & Dusehri — straight from Pakistan" link="/products?category=Premium Mangoes" />
             <Suspense fallback={<SkeletonGrid />}>
-              <ProductGrid products={mangoes} showFilters={false} />
+              <ProductGrid products={premiumMangoes} showFilters={false} />
             </Suspense>
           </div>
         </div>
       )}
 
-      {/* Featured / Super Savings */}
-      {featured.length > 0 && (
-        <div style={{ background: '#fff', padding: '40px 20px', borderBottom: '1px solid var(--border)' }}>
+      {/* Super Savings */}
+      <SuperSavings />
+
+      {/* Seasonal */}
+      {seasonal.length > 0 && (
+        <div style={{ background: '#f7f8f7', padding: '40px 20px', borderBottom: '1px solid #e8e8e8' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-            <SectionHeader title="⚡ Super Savings" subtitle="Limited time deals on fresh produce" link="/products" />
+            <SectionHeader title="🍒 Seasonal Picks" subtitle="Jamun, Lychee, Cherries & Apricots — available for a limited time" link="/products?category=Seasonal" />
             <Suspense fallback={<SkeletonGrid />}>
-              <ProductGrid products={featured} showFilters={false} />
+              <ProductGrid products={seasonal} showFilters={false} />
             </Suspense>
           </div>
         </div>
       )}
 
-
-
-      {/* Fruits */}
-      {fruits.length > 0 && (
-        <div style={{ background: '#f7f8f7', padding: '40px 20px', borderBottom: '1px solid var(--border)' }}>
+      {/* Everyday */}
+      {everyday.length > 0 && (
+        <div style={{ background: '#fff', padding: '40px 20px', borderBottom: '1px solid #e8e8e8' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-            <SectionHeader title="🍎 Fresh Fruits" subtitle="Imported from top farms worldwide" link="/products?category=Fruits" />
+            <SectionHeader title="🛒 Everyday Essentials" subtitle="Apples, bananas, guava, watermelon & more" link="/products?category=Everyday" />
             <Suspense fallback={<SkeletonGrid />}>
-              <ProductGrid products={fruits} showFilters={false} />
+              <ProductGrid products={everyday} showFilters={false} />
             </Suspense>
           </div>
         </div>
       )}
 
-      {/* Vegetables */}
-      {vegetables.length > 0 && (
-        <div style={{ background: '#fff', padding: '40px 20px', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-            <SectionHeader title="🥦 Fresh Vegetables" subtitle="UAE-grown and imported premium vegetables" link="/products?category=Vegetables" />
-            <Suspense fallback={<SkeletonGrid />}>
-              <ProductGrid products={vegetables} showFilters={false} />
-            </Suspense>
-          </div>
-        </div>
-      )}
-
-
-     
     </div>
   );
 }
@@ -136,10 +88,10 @@ function SectionHeader({ title, subtitle, link }: { title: string; subtitle: str
   return (
     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 22, flexWrap: 'wrap', gap: 12 }}>
       <div>
-        <h2 style={{ fontSize: 'clamp(18px, 2.5vw, 26px)', fontWeight: 900, color: 'var(--charcoal)', lineHeight: 1.2 }}>{title}</h2>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 3 }}>{subtitle}</p>
+        <h2 style={{ fontSize: 'clamp(18px, 2.5vw, 26px)', fontWeight: 900, color: '#1a1a1a', lineHeight: 1.2 }}>{title}</h2>
+        <p style={{ fontSize: 13, color: '#888', marginTop: 3 }}>{subtitle}</p>
       </div>
-      <Link href={link} style={{ fontSize: 13, fontWeight: 700, color: 'var(--green)', textDecoration: 'none', border: '1.5px solid var(--green)', borderRadius: 50, padding: '7px 18px', whiteSpace: 'nowrap' }}>
+      <Link href={link} style={{ fontSize: 13, fontWeight: 700, color: '#1a7a3c', textDecoration: 'none', border: '1.5px solid #1a7a3c', borderRadius: 50, padding: '7px 18px', whiteSpace: 'nowrap' }}>
         View All →
       </Link>
     </div>
@@ -150,7 +102,7 @@ function SkeletonGrid() {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 14 }}>
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+        <div key={i} style={{ borderRadius: 12, overflow: 'hidden' }}>
           <div className="skeleton" style={{ aspectRatio: '1/1', width: '100%' }} />
           <div style={{ padding: 12, background: '#fff' }}>
             <div className="skeleton" style={{ height: 12, width: '60%', marginBottom: 8 }} />
